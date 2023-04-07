@@ -16,7 +16,7 @@ export class SupportDeskController {
 
   @UseGuards(LogInWithCredentialsGuard)
   @Post('log-in')
-  async logIn(@Req() request, @Body() body: LoginDto) {
+  async logIn(@Req() request) {
     return request.user;
   }
 

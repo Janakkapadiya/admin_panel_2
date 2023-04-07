@@ -24,7 +24,7 @@ async function bootstrap() {
     .addTag('sample')
     .build();
   const document = SwaggerModule.createDocument(app, config, options);
-  SwaggerModule.setup('api-doc', app, document);
+  SwaggerModule.setup('swagger-doc', app, document);
 
   app.enableCors();
 

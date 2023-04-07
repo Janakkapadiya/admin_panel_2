@@ -4,10 +4,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { decrypt, encrypt } from 'src/utils/crypto.util';
 import { sendEmail } from 'src/utils/mailer';
 import * as bcrypt from 'bcrypt';
-import CreateUserDto, {
-  CreateUserByAdminDto,
-  SetPowerUserPwdDto,
-} from './dtos/create.user';
+import CreateUserDto, { CreateUserByAdminDto } from './dtos/create.user';
 
 @Injectable()
 export class UserService {
@@ -58,14 +55,27 @@ export class UserService {
   }
 
   async createUser(userData: CreateUserDto) {
-    const newUser = await this.prismaService.user.create({
-      data: { ...userData, role: Role.User },
+    const { email } = userData;
+    const user = await this.prismaService.user.findFirst({
+      where: {
+        email,
+      },
     });
-    return newUser;
+    if (!user) {
+      const newUser = await this.prismaService.user.create({
+        data: { ...userData, role: Role.User },
+      });
+      return newUser;
+    }
+    throw new HttpException(
+      'User with this email already exists',
+      HttpStatus.FORBIDDEN,
+    );
   }
 
   async createUserByAdmin(userData: CreateUserByAdminDto) {
     const newUser = await this.prismaService.user.create({ data: userData });
+
     //TODO: encrypt user id and send in link via email
     const encryptedUserId = encrypt(newUser.id + '');
     sendEmail(newUser.email, `Change Your Password`, `${encryptedUserId}`);
