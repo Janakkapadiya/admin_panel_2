@@ -14,11 +14,15 @@ export class LogInWithCredentialsGuard extends AuthGuard('local') {
       await super.canActivate(context);
       // initialize the session
       const request = context.switchToHttp().getRequest();
+      console.log('LoginCred', request.isAuthenticated());
       await super.logIn(request);
       return true;
     } catch (err) {
       throw new HttpException(
-        'Unauthorized request, input could have been missmatched',
+        {
+          status: HttpStatus.UNAUTHORIZED,
+          error: 'Unauthorized request, input could have been missmatched',
+        },
         HttpStatus.UNAUTHORIZED,
       );
     }

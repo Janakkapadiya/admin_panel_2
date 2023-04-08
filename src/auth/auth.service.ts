@@ -21,12 +21,18 @@ export class AuthService {
     } catch (error) {
       if (error?.code === 'P2002') {
         throw new HttpException(
-          'User with that email already exists',
+          {
+            status: HttpStatus.BAD_REQUEST,
+            error: 'User with that email already exists',
+          },
           HttpStatus.BAD_REQUEST,
         );
       }
       throw new HttpException(
-        'Something went wrong',
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: 'Something went wrong',
+        },
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
@@ -39,7 +45,6 @@ export class AuthService {
           email,
         },
       });
-      console.log(user);
       await this.verifyPassword(plainTextPassword, user.password);
       return user;
     } catch (error) {
