@@ -18,6 +18,7 @@ export class LogInWithCredentialsGuard extends AuthGuard('local') {
       await super.logIn(request);
       return true;
     } catch (err) {
+      console.log('Unauthorized request, input could have been missmatched');
       throw new HttpException(
         {
           status: HttpStatus.UNAUTHORIZED,

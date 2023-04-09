@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { Post } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreatepostDto } from './dto/create.post.dto';
@@ -24,14 +24,26 @@ export class PostService {
     try {
       return await this.prismaService.post.findMany({ where: { userId } });
     } catch (err) {
-      throw new NotFoundException('User not found');
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: 'no post related to this id found',
+        },
+        HttpStatus.NOT_FOUND,
+      );
     }
   }
 
   async getAllPosts(): Promise<Post[]> {
     const posts = await this.prismaService.post.findMany();
     if (posts.length === 0) {
-      throw new NotFoundException('No posts found');
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: 'no posts found',
+        },
+        HttpStatus.NOT_FOUND,
+      );
     }
     return posts;
   }
@@ -43,7 +55,13 @@ export class PostService {
       },
     });
     if (!Post || Post.userId != userId) {
-      throw new Error('Post not found.');
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: 'no posts found',
+        },
+        HttpStatus.NOT_FOUND,
+      );
     }
     await this.prismaService.post.delete({
       where: {

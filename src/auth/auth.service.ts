@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
 import RegisterDto from './dto/register.dto';
@@ -6,6 +6,7 @@ import { Role } from 'src/common/enum/role.enum';
 
 @Injectable()
 export class AuthService {
+  private logger = new Logger('AuthService');
   constructor(private readonly prismaService: PrismaService) {}
   public async register(registrationData: RegisterDto) {
     const hashedPassword = await bcrypt.hash(registrationData.password, 10);
@@ -20,6 +21,7 @@ export class AuthService {
       return user;
     } catch (error) {
       if (error?.code === 'P2002') {
+        this.logger.error(`user with that email already exists`);
         throw new HttpException(
           {
             status: HttpStatus.BAD_REQUEST,
@@ -28,6 +30,7 @@ export class AuthService {
           HttpStatus.BAD_REQUEST,
         );
       }
+      this.logger.error(`user with that email already exists`);
       throw new HttpException(
         {
           status: HttpStatus.INTERNAL_SERVER_ERROR,

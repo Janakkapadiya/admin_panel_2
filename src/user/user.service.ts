@@ -68,7 +68,10 @@ export class UserService {
       return newUser;
     }
     throw new HttpException(
-      'User with this email already exists',
+      {
+        status: HttpStatus.FORBIDDEN,
+        error: 'User with this email already exists',
+      },
       HttpStatus.FORBIDDEN,
     );
   }
