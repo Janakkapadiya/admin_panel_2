@@ -2,10 +2,25 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JWTConfig } from '../../../domain/config/jwt.interface';
 import { DatabaseConfig } from 'src/domain/config/DatabaseConfig';
+import { EmailConfig } from 'src/domain/config/EmailConfig';
 
 @Injectable()
-export class EnvironmentConfigService implements DatabaseConfig, JWTConfig {
+export class EnvironmentConfigService
+  implements DatabaseConfig, JWTConfig, EmailConfig
+{
   constructor(private configService: ConfigService) {}
+  getEmailHost(): string {
+    return this.configService.get<string>('EMAIL_HOST');
+  }
+  getEmailPort(): number {
+    return this.configService.get<number>('EMAIL_PORT');
+  }
+  getEmailSender(): string {
+    return this.configService.get<string>('EMAIL_SENDER');
+  }
+  getEmailSecret(): string {
+    return this.configService.get<string>('EMAIL_SECRET');
+  }
 
   getJwtSecret(): string {
     return this.configService.get<string>('JWT_SECRET');

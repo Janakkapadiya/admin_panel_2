@@ -22,6 +22,18 @@ class EnvironmentVariables {
   JWT_SECRET: string;
 
   @IsString()
+  EMAIL_SENDER: string;
+
+  @IsString()
+  EMAIL_HOST: string;
+
+  @IsNumber()
+  EMAIL_PORT: number;
+
+  @IsString()
+  EMAIL_SECRET: string;
+
+  @IsString()
   DATABASE_HOST: string;
   @IsNumber()
   DATABASE_PORT: number;
