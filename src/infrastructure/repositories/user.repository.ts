@@ -4,14 +4,12 @@ import { Repository } from 'typeorm';
 import { User } from '../entities/user.entity';
 import { UserRepository } from 'src/domain/interface/UserRepository';
 import { UserM } from 'src/domain/model/UserM';
-import { BcryptService } from '../services/bcrypt/bcrypt.service';
 
 @Injectable()
 export class DatabaseUserRepository implements UserRepository {
   constructor(
     @InjectRepository(User)
     private readonly userEntityRepository: Repository<User>,
-    private readonly bcryptService: BcryptService,
   ) {}
 
   async register(user: UserM): Promise<UserM> {

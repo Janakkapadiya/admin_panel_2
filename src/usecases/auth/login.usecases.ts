@@ -1,4 +1,3 @@
-import { Email } from '@mui/icons-material';
 import { IBcryptService } from 'src/domain/adepters/bcrypt.interface';
 import {
   IJwtService,

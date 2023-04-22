@@ -3,25 +3,18 @@ import { IsEnum, IsString } from 'class-validator';
 import { Role } from 'src/domain/enums/Roles.enum';
 
 export class CreateUserDto {
+  @ApiProperty()
+  @IsString()
   email: string;
+  @ApiProperty()
+  @IsString()
   name: string;
-  password: string;
-}
-
-export class CreateUserByAdminDto {
   @ApiProperty()
   @IsString()
-  email: string;
-
+  password: string;
   @ApiProperty()
-  @IsEnum([Role.PowerUser, Role.User, Role.SupportDesk])
+  @IsEnum([Role.PowerUser, Role.User, Role.SupportDesk, Role.Admin])
   role: Role;
-}
-
-export class SetPowerUserPwdDto {
-  @ApiProperty()
-  @IsString()
-  password: string;
 }
 
 export default CreateUserDto;

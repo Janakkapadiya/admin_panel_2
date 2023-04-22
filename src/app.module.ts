@@ -1,4 +1,3 @@
-import { UserController } from './user/user.controller';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { PassportModule } from '@nestjs/passport';
@@ -11,6 +10,9 @@ import { ExceptionsModule } from './infrastructure/exceptions/exceptions.module'
 import { UsecasesProxyModule } from './infrastructure/usecases-proxy/usecases-proxy.module';
 import { BcryptModule } from './infrastructure/services/bcrypt/bcrypt.module';
 import { EnvironmentConfigModule } from './infrastructure/config/environment-config/environment-config.module';
+import { UserController } from './infrastructure/controllers/user/User.controller';
+import { ControllersModule } from './infrastructure/controllers/controllers.module';
+import { AppService } from './app.service';
 
 @Module({
   imports: [
@@ -27,6 +29,6 @@ import { EnvironmentConfigModule } from './infrastructure/config/environment-con
     EnvironmentConfigModule,
   ],
   controllers: [AppController, UserController],
-  providers: [LocalStrategy, JwtStrategy],
+  providers: [LocalStrategy, JwtStrategy, AppService],
 })
 export class AppModule {}

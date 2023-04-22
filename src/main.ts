@@ -1,51 +1,45 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import * as session from 'express-session';
-import * as passport from 'passport';
-import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
-import {
-  SwaggerModule,
-  DocumentBuilder,
-  SwaggerDocumentOptions,
-} from '@nestjs/swagger';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { LoggingInterceptor } from './infrastructure/common/interceptors/logger.interceptor';
+import { AllExceptionFilter } from './infrastructure/common/filter/exception';
+import * as cookieParser from 'cookie-parser';
+import { LoggerService } from './infrastructure/logger/logger.service';
 
 async function bootstrap() {
+  const env = process.env.NODE_ENV;
+
   const app = await NestFactory.create(AppModule);
 
-  const options: SwaggerDocumentOptions = {
-    deepScanRoutes: true,
-  };
+  app.use(cookieParser());
 
-  const config = new DocumentBuilder()
-    .setTitle('Swagger Doc')
-    .setDescription('API collection')
-    .setVersion('1.0')
-    .addTag('sample')
-    .build();
-  const document = SwaggerModule.createDocument(app, config, options);
-  SwaggerModule.setup('swagger-doc', app, document);
+  // Filter
+  app.useGlobalFilters(new AllExceptionFilter(new LoggerService()));
 
-  app.enableCors();
+  // pipes
+  app.useGlobalPipes(new ValidationPipe());
 
-  app.useGlobalPipes(
-    new ValidationPipe({
-      transform: true,
-    }),
-  );
+  // interceptors
+  app.useGlobalInterceptors(new LoggingInterceptor(new LoggerService()));
 
-  const configService = app.get(ConfigService);
-  app.use(
-    session({
-      secret: configService.get('SESSION_SECRET'),
-      resave: false,
-      saveUninitialized: false,
-      cookie: { maxAge: 3600000 },
-    }),
-  );
+  // base routing
+  app.setGlobalPrefix('api_v1');
 
-  app.use(passport.initialize());
-  app.use(passport.session());
+  // swagger config
+  if (env !== 'production') {
+    const config = new DocumentBuilder()
+      .addBearerAuth()
+      .setTitle('Clean Architecture Nestjs')
+      .setDescription('Example with todo list')
+      .setVersion('1.0')
+      .build();
+    const document = SwaggerModule.createDocument(app, config, {
+      deepScanRoutes: true,
+    });
+    SwaggerModule.setup('api', app, document);
+  }
+
   await app.listen(3000);
 }
 bootstrap();

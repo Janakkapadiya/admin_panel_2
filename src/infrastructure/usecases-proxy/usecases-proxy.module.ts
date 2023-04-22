@@ -19,15 +19,13 @@ import { EnvironmentConfigModule } from '../config/environment-config/environmen
 import { EnvironmentConfigService } from '../config/environment-config/environment-config.service';
 import { UseCaseProxy } from './usecases-proxy';
 import { DatabasePostRepository } from '../repositories/post.repository';
-import { registerUseCases } from 'src/usecases/auth/register.usecase';
 import { getPostUseCase } from 'src/usecases/post/getPost.usecase';
 import { getAllPostUseCase } from 'src/usecases/post/getAllPost.usecase';
 import { createPostUseCase } from 'src/usecases/post/createPost.usecase';
 import { deletePostUseCase } from 'src/usecases/post/deletePost.usecase';
-import { DatabaseAdminRepository } from '../repositories/admin.repository';
-import { createUserByAdminUseCases } from 'src/usecases/admin/createUserByAdmin.usecase';
 import { getUsersUseCases } from 'src/usecases/user/all.user.usecase';
 import { getUserByIdUseCases } from 'src/usecases/user/getById.user.usecase';
+import { registerUseCases } from 'src/usecases/auth/register.usecase';
 
 @Module({
   imports: [
@@ -42,7 +40,6 @@ import { getUserByIdUseCases } from 'src/usecases/user/getById.user.usecase';
 export class UsecasesProxyModule {
   // Auth
   static LOGIN_USECASES_PROXY = 'LoginUseCasesProxy';
-  static SIGNUP_USECASE_PROXY = 'SignUpUseCaseProxy';
   static IS_AUTHENTICATED_USECASES_PROXY = 'IsAuthenticatedUseCasesProxy';
   static LOGOUT_USECASES_PROXY = 'LogoutUseCasesProxy';
 
@@ -51,10 +48,10 @@ export class UsecasesProxyModule {
   static CREATE_POST_USECASES_PROXY = 'createPostUsecasesProxy';
   static DELETE_POST_USECASES_PROXY = 'deletePostUsecasesProxy';
 
-  static CREATE_USER_BY_ADMIN_USECASES_PROXY = 'createUserUsecasesProxy';
-
   static GET_USERS_USECASES_PROXY = 'deleteUserUsecasesProxy';
   static GET_USER_BY_ID_USECASES_PROXY = 'deleteUserUsecasesProxy';
+  // signup
+  static CREATE_USER_USECASES_PROXY = 'createUserUsecasesProxy';
 
   static register(): DynamicModule {
     return {
@@ -98,20 +95,8 @@ export class UsecasesProxyModule {
           useFactory: () => new UseCaseProxy(new LogoutUseCases()),
         },
         {
-          inject: [DatabasePostRepository, LoggerService, BcryptService],
-          provide: UsecasesProxyModule.SIGNUP_USECASE_PROXY,
-          useFactory: (
-            logger: LoggerService,
-            userRepository: DatabaseUserRepository,
-            bcryptService: BcryptService,
-          ) =>
-            new UseCaseProxy(
-              new registerUseCases(logger, userRepository, bcryptService),
-            ),
-        },
-        {
           inject: [DatabasePostRepository],
-          provide: UsecasesProxyModule.GET_POSTS_USECASES_PROXY,
+          provide: UsecasesProxyModule.GET_POST_USECASES_PROXY,
           useFactory: (postRepository: DatabasePostRepository) =>
             new UseCaseProxy(new getPostUseCase(postRepository)),
         },
@@ -139,16 +124,16 @@ export class UsecasesProxyModule {
             postRepository: DatabasePostRepository,
           ) => new UseCaseProxy(new deletePostUseCase(logger, postRepository)),
         },
-
         {
-          inject: [LoggerService, DatabaseAdminRepository],
-          provide: UsecasesProxyModule.CREATE_USER_BY_ADMIN_USECASES_PROXY,
+          inject: [DatabasePostRepository, LoggerService, BcryptService],
+          provide: UsecasesProxyModule.CREATE_USER_USECASES_PROXY,
           useFactory: (
             logger: LoggerService,
-            adminRepository: DatabaseAdminRepository,
+            userRepository: DatabaseUserRepository,
+            bcryptService: BcryptService,
           ) =>
             new UseCaseProxy(
-              new createUserByAdminUseCases(logger, adminRepository),
+              new registerUseCases(logger, userRepository, bcryptService),
             ),
         },
         {
@@ -158,7 +143,7 @@ export class UsecasesProxyModule {
             new UseCaseProxy(new getUsersUseCases(userRepository)),
         },
         {
-          inject: [LoggerService, DatabaseAdminRepository],
+          inject: [LoggerService, DatabaseUserRepository],
           provide: UsecasesProxyModule.GET_USER_BY_ID_USECASES_PROXY,
           useFactory: (userRepository: DatabaseUserRepository) =>
             new UseCaseProxy(new getUserByIdUseCases(userRepository)),
@@ -170,10 +155,12 @@ export class UsecasesProxyModule {
         UsecasesProxyModule.GET_POSTS_USECASES_PROXY,
         UsecasesProxyModule.CREATE_POST_USECASES_PROXY,
         UsecasesProxyModule.DELETE_POST_USECASES_PROXY,
+        // **********
         UsecasesProxyModule.LOGIN_USECASES_PROXY,
         UsecasesProxyModule.IS_AUTHENTICATED_USECASES_PROXY,
         UsecasesProxyModule.LOGOUT_USECASES_PROXY,
-        UsecasesProxyModule.CREATE_USER_BY_ADMIN_USECASES_PROXY,
+        // **********
+        UsecasesProxyModule.CREATE_USER_USECASES_PROXY,
         UsecasesProxyModule.GET_USERS_USECASES_PROXY,
         UsecasesProxyModule.GET_USER_BY_ID_USECASES_PROXY,
       ],

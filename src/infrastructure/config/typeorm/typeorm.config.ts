@@ -1,9 +1,12 @@
-import { DataSourceOptions } from 'typeorm';
+import { DataSource, DataSourceOptions } from 'typeorm';
 import * as dotenv from 'dotenv';
+import { join } from 'path';
 
 if (process.env.NODE_ENV === 'local') {
   dotenv.config({ path: '.env' });
 }
+
+dotenv.config({ path: '.env' });
 
 const config: DataSourceOptions = {
   type: 'mysql',
@@ -12,13 +15,13 @@ const config: DataSourceOptions = {
   username: process.env.DATABASE_USER,
   password: process.env.DATABASE_PASSWORD,
   database: process.env.DATABASE_NAME,
-  entities: [__dirname + './../../**/*.entity{.ts,.js}'],
+  entities: [join(__dirname, '**', '*.entity.{ts,js}')],
   synchronize: false,
   migrationsRun: true,
   migrationsTableName: 'migration_todo',
-  migrations: ['database/migrations/**/*{.ts,.js}'],
+  migrations: ['dist/migrations/*.js'],
 };
 
-console.log(config);
+const dataSource = new DataSource(config);
 
-export default config;
+export default dataSource;

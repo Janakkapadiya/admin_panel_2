@@ -1,62 +1,63 @@
-import { CookieAuthenticationGuard } from 'src/guard/cookieAuthenticationGuard';
-import { registerUseCases } from 'src/usecases/auth/register.usecase';
-import { Body, Controller, Inject, Post, UseGuards } from "@nestjs/common";
-import { UseCaseProxy } from "src/infrastructure/usecases-proxy/usecases-proxy";
-import { UsecasesProxyModule } from "src/infrastructure/usecases-proxy/usecases-proxy.module";
+import {
+  Body,
+  Controller,
+  Get,
+  Inject,
+  Param,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
+import { UseCaseProxy } from 'src/infrastructure/usecases-proxy/usecases-proxy';
+import { UsecasesProxyModule } from 'src/infrastructure/usecases-proxy/usecases-proxy.module';
 import { getUserByIdUseCases } from 'src/usecases/user/getById.user.usecase';
 import { getUsersUseCases } from 'src/usecases/user/all.user.usecase';
 import { Role } from 'src/domain/enums/Roles.enum';
-import CreateUserDto, { CreateUserByAdminDto } from './user-dto-class';
-import { User } from 'src/infrastructure/entities/user.entity';
+import { CreateUserDto } from './user-dto-class';
 import { Roles } from 'src/infrastructure/common/decoretors/Roles.decoretor';
 import { RolesGuard } from 'src/infrastructure/common/guards/roles.guard';
+import { UserM } from 'src/domain/model/UserM';
+import { JwtAuthGuard } from 'src/infrastructure/common/guards/jwtAuth.guard';
+import { registerUseCases } from 'src/usecases/auth/register.usecase';
 
 @Controller('user')
 export class UserController {
   constructor(
-    @Inject(UsecasesProxyModule.SIGNUP_USECASE_PROXY)
-    private readonly getTodoUsecaseProxy: UseCaseProxy<registerUseCases>,
+    @Inject(UsecasesProxyModule.CREATE_USER_USECASES_PROXY)
+    private readonly createUserUsecaseProxy: UseCaseProxy<registerUseCases>,
     @Inject(UsecasesProxyModule.GET_USER_BY_ID_USECASES_PROXY)
-    private readonly getAllTodoUsecaseProxy: UseCaseProxy<getUserByIdUseCases>,
+    private readonly getUserByIdUseCaseProxy: UseCaseProxy<getUserByIdUseCases>,
     @Inject(UsecasesProxyModule.GET_USERS_USECASES_PROXY)
-    private readonly updateTodoUsecaseProxy: UseCaseProxy<getUsersUseCases>,
+    private readonly getUsersUseCaseProxy: UseCaseProxy<getUsersUseCases>,
   ) {}
 
-  @Roles(Role.Admin)
-  @UseGuards(RolesGuard)
-  @Post('createuser')
-  async createPowerUser(
-    @Body() userPaylaod: CreateUserByAdminDto,
-  ): Promise<User> {
-    return this.usersService.createUserByAdmin(userPaylaod);
-  }
+  @Post()
+  async createUser(@Body() userData: CreateUserDto) {
+    const { name, email, password, role } = userData;
 
-  @Roles(Role.Admin, Role.PowerUser)
-  @UseGuards(RolesGuard)
-  @Post('user')
-  async createUser(@Body() userData: CreateUserDto): Promise<User> {
-    const user = this.getTodoUsecaseProxy.getInstance().execute(userData);
+    const insert_user = new UserM();
+    insert_user.name = name;
+    insert_user.email = email;
+    insert_user.password = password;
+    insert_user.role = role;
+
+    const user = this.createUserUsecaseProxy.getInstance().execute(insert_user);
+
     return user;
   }
 
-  @Roles(Role.PowerUser)
+  @Roles(Role.User)
   @UseGuards(RolesGuard)
+  @UseGuards(JwtAuthGuard)
   @Get('all')
-  async getAllUser(): Promise<User[]> {
-    return this.usersService.getAll({ role: Role.User });
+  async getAllUser() {
+    return this.getUsersUseCaseProxy.getInstance().execute();
   }
 
-  @Roles(Role.PowerUser)
+  @Roles(Role.User)
   @UseGuards(RolesGuard)
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
-  async getUser(@Param('id') id: number): Promise<User> {
-    return this.usersService.getById(id);
+  async getUser(@Param('id') id: number) {
+    return this.getUserByIdUseCaseProxy.getInstance().execute(id);
   }
-
-  @Post('poweruser/setpassword/:id')
-  async checkPowerUser(
-    @Param('id') id: string,
-    @Body() body: SetPowerUserPwdDto,
-  ): Promise<User> {
-    return this.usersService.setPowerUserPassword(id, body.password);
-  }
+}
