@@ -10,9 +10,8 @@ export class createUserByAdminUseCases {
   async execute(user: AdminM): Promise<AdminM> {
     const the_user = new AdminM();
     the_user.email = user.email;
-    the_user.roles = user.roles;
+    the_user.role = user.role;
     const result = await this.adminRepository.createUserByAdmin(the_user);
-    this.logger.log('', 'User have been inserted by admin');
     return result;
   }
 }

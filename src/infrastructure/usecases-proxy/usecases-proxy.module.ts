@@ -160,11 +160,8 @@ export class UsecasesProxyModule {
         {
           inject: [LoggerService, DatabaseAdminRepository],
           provide: UsecasesProxyModule.GET_USER_BY_ID_USECASES_PROXY,
-          useFactory: (
-            logger: LoggerService,
-            userRepository: DatabaseUserRepository,
-          ) =>
-            new UseCaseProxy(new getUserByIdUseCases(logger, userRepository)),
+          useFactory: (userRepository: DatabaseUserRepository) =>
+            new UseCaseProxy(new getUserByIdUseCases(userRepository)),
         },
       ],
 

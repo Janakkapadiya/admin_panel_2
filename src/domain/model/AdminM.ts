@@ -1,4 +1,3 @@
-export class AdminM {
-  email: string;
-  roles: string;
-}
+import { UserM } from './UserM';
+
+export class AdminM extends UserM {}
