@@ -6,15 +6,18 @@ import { UserM } from 'src/domain/model/UserM';
 export class registerUseCases {
   constructor(
     private readonly logger: ILogger,
-    private readonly userRepository: UserRepository,
+    private userRepository: UserRepository,
     private readonly bcryptService: BcryptService,
   ) {}
   async execute(user: UserM): Promise<UserM> {
     const the_user = new UserM();
-    the_user.name = user.name;
     the_user.email = user.email;
+    the_user.name = user.name;
+    the_user.role = user.role;
     the_user.password = await this.bcryptService.hash(user.password);
-    const result = await this.userRepository.create(the_user);
+    console.log(the_user);
+    const result = await this.userRepository.register(the_user);
+    console.log(result);
     this.logger.log('addUserUseCases execute', 'New User have been inserted');
     return result;
   }

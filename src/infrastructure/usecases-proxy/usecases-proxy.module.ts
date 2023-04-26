@@ -125,7 +125,7 @@ export class UsecasesProxyModule {
           ) => new UseCaseProxy(new deletePostUseCase(logger, postRepository)),
         },
         {
-          inject: [DatabasePostRepository, LoggerService, BcryptService],
+          inject: [DatabaseUserRepository, LoggerService, BcryptService],
           provide: UsecasesProxyModule.CREATE_USER_USECASES_PROXY,
           useFactory: (
             logger: LoggerService,

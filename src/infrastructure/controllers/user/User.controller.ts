@@ -11,15 +11,21 @@ import { UseCaseProxy } from 'src/infrastructure/usecases-proxy/usecases-proxy';
 import { UsecasesProxyModule } from 'src/infrastructure/usecases-proxy/usecases-proxy.module';
 import { getUserByIdUseCases } from 'src/usecases/user/getById.user.usecase';
 import { getUsersUseCases } from 'src/usecases/user/all.user.usecase';
-import { Role } from 'src/domain/enums/Roles.enum';
 import { CreateUserDto } from './user-dto-class';
-import { Roles } from 'src/infrastructure/common/decoretors/Roles.decoretor';
-import { RolesGuard } from 'src/infrastructure/common/guards/roles.guard';
 import { UserM } from 'src/domain/model/UserM';
 import { JwtAuthGuard } from 'src/infrastructure/common/guards/jwtAuth.guard';
 import { registerUseCases } from 'src/usecases/auth/register.usecase';
+import { roleGuard } from 'src/infrastructure/common/guards/roles.guard';
+import { Role } from 'src/domain/enums/Roles.enum';
+import { role } from 'src/infrastructure/common/decoretors/Roles.decoretor';
+import { use } from 'passport';
+import { UserPresenter } from './user.presenter';
+import { ApiExtraModels, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @Controller('user')
+@ApiTags('user')
+@ApiResponse({ status: 500, description: 'Internal error' })
+@ApiExtraModels(UserPresenter)
 export class UserController {
   constructor(
     @Inject(UsecasesProxyModule.CREATE_USER_USECASES_PROXY)
@@ -34,27 +40,33 @@ export class UserController {
   async createUser(@Body() userData: CreateUserDto) {
     const { name, email, password, role } = userData;
 
-    const insert_user = new UserM();
-    insert_user.name = name;
-    insert_user.email = email;
-    insert_user.password = password;
-    insert_user.role = role;
+    console.log(this.createUserUsecaseProxy.getInstance());
 
-    const user = this.createUserUsecaseProxy.getInstance().execute(insert_user);
+    const insert_user = new UserM();
+    insert_user.email = email;
+    insert_user.name = name;
+    insert_user.role = role;
+    insert_user.password = password;
+
+    const user = await this.createUserUsecaseProxy
+      .getInstance()
+      .execute(insert_user);
+
+    console.log(user);
 
     return user;
   }
 
-  @Roles(Role.User)
-  @UseGuards(RolesGuard)
+  @role(Role.User)
+  @UseGuards(roleGuard)
   @UseGuards(JwtAuthGuard)
   @Get('all')
   async getAllUser() {
     return this.getUsersUseCaseProxy.getInstance().execute();
   }
 
-  @Roles(Role.User)
-  @UseGuards(RolesGuard)
+  @role(Role.User)
+  @UseGuards(roleGuard)
   @UseGuards(JwtAuthGuard)
   @Get(':id')
   async getUser(@Param('id') id: number) {

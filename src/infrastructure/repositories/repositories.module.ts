@@ -1,3 +1,4 @@
+import { UserRepository } from 'src/domain/interface/UserRepository';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeOrmConfigModule } from '../config/typeorm/typeorm.module';

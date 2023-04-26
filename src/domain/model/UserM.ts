@@ -3,7 +3,7 @@ import { Role } from '../enums/Roles.enum';
 export class UserWithoutPassword {
   id: number;
   email: string;
-  name: string | null;
+  name: string;
   role: Role;
 }
 

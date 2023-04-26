@@ -13,6 +13,7 @@ import { EnvironmentConfigModule } from './infrastructure/config/environment-con
 import { UserController } from './infrastructure/controllers/user/User.controller';
 import { ControllersModule } from './infrastructure/controllers/controllers.module';
 import { AppService } from './app.service';
+import { RepositoriesModule } from './infrastructure/repositories/repositories.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { AppService } from './app.service';
     BcryptModule,
     JwtServiceModule,
     EnvironmentConfigModule,
+    RepositoriesModule,
   ],
   controllers: [AppController, UserController],
   providers: [LocalStrategy, JwtStrategy, AppService],

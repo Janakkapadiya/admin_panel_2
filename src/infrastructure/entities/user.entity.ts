@@ -18,7 +18,7 @@ export class User {
   @Column({
     name: 'user_name',
   })
-  username: string;
+  name: string;
 
   @Column({
     name: 'user_password',
@@ -31,7 +31,7 @@ export class User {
     enum: Role,
     default: Role.User,
   })
-  roles: Role;
+  role: Role;
 
   @OneToMany(() => Posts, (post) => post.user)
   posts: Posts[];

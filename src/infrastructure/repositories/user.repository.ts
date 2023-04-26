@@ -13,8 +13,11 @@ export class DatabaseUserRepository implements UserRepository {
   ) {}
 
   async register(user: UserM): Promise<UserM> {
-    const result = await this.userEntityRepository.insert(user);
-    return this.toUser(result.generatedMaps[0] as User);
+    const userEntity = this.toUserEntity(user);
+    console.log(userEntity);
+    const result = await this.userEntityRepository.save(userEntity);
+    console.log(result, '****************************');
+    return this.toUser(result);
   }
 
   async getById(id: number): Promise<UserM> {
@@ -26,8 +29,9 @@ export class DatabaseUserRepository implements UserRepository {
     return this.toUser(found);
   }
 
-  async create(user: UserM): Promise<UserM> {
+  async createUser(user: UserM): Promise<UserM> {
     const result = await this.userEntityRepository.insert(user);
+    console.log(result);
     return this.toUser(result.generatedMaps[0] as User);
   }
 
@@ -52,9 +56,9 @@ export class DatabaseUserRepository implements UserRepository {
 
     adminUser.id = adminUserEntity.id;
     adminUser.email = adminUserEntity.email;
-    adminUser.name = adminUserEntity.username;
+    adminUser.name = adminUserEntity.name;
     adminUser.password = adminUserEntity.password;
-    adminUser.role = adminUserEntity.roles;
+    adminUser.role = adminUserEntity.role;
 
     return adminUser;
   }
@@ -62,8 +66,11 @@ export class DatabaseUserRepository implements UserRepository {
   private toUserEntity(adminUser: UserM): User {
     const adminUserEntity: User = new User();
 
+    adminUserEntity.id = adminUser.id;
     adminUserEntity.email = adminUser.email;
+    adminUserEntity.name = adminUser.name;
     adminUserEntity.password = adminUser.password;
+    adminUserEntity.role = adminUser.role;
 
     return adminUserEntity;
   }
