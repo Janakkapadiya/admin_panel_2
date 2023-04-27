@@ -3,7 +3,7 @@ import { Reflector } from '@nestjs/core';
 import { Role } from 'src/domain/enums/Roles.enum';
 
 @Injectable()
-export class roleGuard implements CanActivate {
+export class RoleGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {

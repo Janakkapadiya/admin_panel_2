@@ -19,7 +19,7 @@ export class create_user_and_posts_tables1612345678901
         \`user_email\` varchar(255) NOT NULL,
         \`user_name\` varchar(255) NOT NULL,
         \`user_password\` varchar(255) NOT NULL,
-        \`role\` enum('User') NOT NULL DEFAULT 'User',
+        \`role\` enum('User','Admin','PowerUser','SupportDesk') NOT NULL DEFAULT 'User',
         PRIMARY KEY (\`user_id\`)
       ) ENGINE=InnoDB`,
     );

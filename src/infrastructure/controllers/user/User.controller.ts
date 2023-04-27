@@ -12,15 +12,15 @@ import { UsecasesProxyModule } from 'src/infrastructure/usecases-proxy/usecases-
 import { getUserByIdUseCases } from 'src/usecases/user/getById.user.usecase';
 import { getUsersUseCases } from 'src/usecases/user/all.user.usecase';
 import { CreateUserDto } from './user-dto-class';
-import { UserM } from 'src/domain/model/UserM';
 import { JwtAuthGuard } from 'src/infrastructure/common/guards/jwtAuth.guard';
-import { registerUseCases } from 'src/usecases/auth/register.usecase';
-import { roleGuard } from 'src/infrastructure/common/guards/roles.guard';
+import { RoleGuard } from 'src/infrastructure/common/guards/roles.guard';
 import { Role } from 'src/domain/enums/Roles.enum';
-import { role } from 'src/infrastructure/common/decoretors/Roles.decoretor';
-import { use } from 'passport';
+import { Roles } from 'src/infrastructure/common/decoretors/Roles.decoretor';
 import { UserPresenter } from './user.presenter';
 import { ApiExtraModels, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { CreateUserUseCase } from 'src/usecases/user/create.user.usecase';
+import { ApiResponseType } from 'src/infrastructure/common/swagger/res.decorator';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('user')
 @ApiTags('user')
@@ -29,7 +29,7 @@ import { ApiExtraModels, ApiResponse, ApiTags } from '@nestjs/swagger';
 export class UserController {
   constructor(
     @Inject(UsecasesProxyModule.CREATE_USER_USECASES_PROXY)
-    private readonly createUserUsecaseProxy: UseCaseProxy<registerUseCases>,
+    private readonly createUserUsecaseProxy: UseCaseProxy<CreateUserUseCase>,
     @Inject(UsecasesProxyModule.GET_USER_BY_ID_USECASES_PROXY)
     private readonly getUserByIdUseCaseProxy: UseCaseProxy<getUserByIdUseCases>,
     @Inject(UsecasesProxyModule.GET_USERS_USECASES_PROXY)
@@ -37,38 +37,31 @@ export class UserController {
   ) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(Role.Admin)
+  @ApiResponseType(UserPresenter, true)
   async createUser(@Body() userData: CreateUserDto) {
-    const { name, email, password, role } = userData;
-
-    console.log(this.createUserUsecaseProxy.getInstance());
-
-    const insert_user = new UserM();
-    insert_user.email = email;
-    insert_user.name = name;
-    insert_user.role = role;
-    insert_user.password = password;
-
     const user = await this.createUserUsecaseProxy
       .getInstance()
-      .execute(insert_user);
+      .execute(userData);
 
     console.log(user);
 
-    return user;
+    return new UserPresenter(user);
   }
 
-  @role(Role.User)
-  @UseGuards(roleGuard)
-  @UseGuards(JwtAuthGuard)
+  @Roles(Role.User)
+  @UseGuards(JwtAuthGuard, RoleGuard)
   @Get('all')
+  @ApiResponseType(UserPresenter, true)
   async getAllUser() {
     return this.getUsersUseCaseProxy.getInstance().execute();
   }
 
-  @role(Role.User)
-  @UseGuards(roleGuard)
-  @UseGuards(JwtAuthGuard)
+  @Roles(Role.User)
+  @UseGuards(JwtAuthGuard, RoleGuard)
   @Get(':id')
+  @ApiResponseType(UserPresenter, true)
   async getUser(@Param('id') id: number) {
     return this.getUserByIdUseCaseProxy.getInstance().execute(id);
   }

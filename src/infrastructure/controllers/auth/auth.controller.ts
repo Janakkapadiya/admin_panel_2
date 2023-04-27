@@ -17,7 +17,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
-import { AuthLoginDto } from './auth-dto.class';
+import { AuthLoginDto, RegisterDto } from './auth-dto.class';
 import { IsAuthPresenter } from './auth.presenter';
 
 import { JwtAuthGuard } from '../../common/guards/jwtAuth.guard';
@@ -28,6 +28,8 @@ import { UsecasesProxyModule } from '../../usecases-proxy/usecases-proxy.module'
 import { LoginUseCases } from '../../../usecases/auth/login.usecases';
 import { IsAuthenticatedUseCases } from '../../../usecases/auth/isAuthenticated.usecases';
 import { LogoutUseCases } from '../../../usecases/auth/logout.usecases';
+import { RegisterUseCases } from '../../../usecases/auth/register.user.usecase';
+import { ApiResponseType } from 'src/infrastructure/common/swagger/res.decorator';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -45,7 +47,21 @@ export class AuthController {
     private readonly logoutUsecaseProxy: UseCaseProxy<LogoutUseCases>,
     @Inject(UsecasesProxyModule.IS_AUTHENTICATED_USECASES_PROXY)
     private readonly isAuthUsecaseProxy: UseCaseProxy<IsAuthenticatedUseCases>,
+    @Inject(UsecasesProxyModule.REGISTER_USER_USECASES_PROXY)
+    private readonly registerUserTestCasesProxy: UseCaseProxy<RegisterUseCases>,
   ) {}
+
+  @Post('register')
+  @ApiResponseType(IsAuthPresenter, true)
+  async register(@Body() registerData: RegisterDto) {
+    const user = await this.registerUserTestCasesProxy
+      .getInstance()
+      .execute(registerData);
+
+    console.log(user);
+
+    return user;
+  }
 
   @Post('login')
   @UseGuards(LoginGuard)

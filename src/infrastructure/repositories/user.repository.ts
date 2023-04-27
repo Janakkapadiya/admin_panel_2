@@ -13,14 +13,12 @@ export class DatabaseUserRepository implements UserRepository {
   ) {}
 
   async register(user: UserM): Promise<UserM> {
-    const userEntity = this.toUserEntity(user);
-    console.log(userEntity);
-    const result = await this.userEntityRepository.save(userEntity);
-    console.log(result, '****************************');
-    return this.toUser(result);
+    const result = await this.userEntityRepository.insert(user);
+    console.log(result);
+    return this.toUser(result.generatedMaps[0] as User);
   }
 
-  async getById(id: number): Promise<UserM> {
+  async findById(id: number): Promise<UserM> {
     const found = await this.userEntityRepository.findOne({
       where: {
         id,
@@ -35,12 +33,12 @@ export class DatabaseUserRepository implements UserRepository {
     return this.toUser(result.generatedMaps[0] as User);
   }
 
-  async getAll(): Promise<UserM[]> {
+  async findAll(): Promise<UserM[]> {
     const users = await this.userEntityRepository.find();
     return users.map((adminUserEntity) => this.toUser(adminUserEntity));
   }
 
-  async getByEmail(email: string): Promise<UserM> {
+  async findByEmail(email: string): Promise<UserM> {
     const adminUserEntity = await this.userEntityRepository.findOne({
       where: {
         email: email,
@@ -49,8 +47,9 @@ export class DatabaseUserRepository implements UserRepository {
     if (!adminUserEntity) {
       return null;
     }
-    return this.toUser(adminUserEntity);
+    return adminUserEntity;
   }
+
   private toUser(adminUserEntity: User): UserM {
     const adminUser: UserM = new UserM();
 

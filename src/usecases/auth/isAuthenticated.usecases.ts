@@ -5,7 +5,7 @@ export class IsAuthenticatedUseCases {
   constructor(private readonly adminUserRepo: UserRepository) {}
 
   async execute(email: string): Promise<UserWithoutPassword> {
-    const user: UserM = await this.adminUserRepo.getByEmail(email);
+    const user: UserM = await this.adminUserRepo.findByEmail(email);
     const { password, ...info } = user;
     return info;
   }

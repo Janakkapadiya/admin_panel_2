@@ -28,9 +28,8 @@ import { RepositoriesModule } from './infrastructure/repositories/repositories.m
     BcryptModule,
     JwtServiceModule,
     EnvironmentConfigModule,
-    RepositoriesModule,
+    // RepositoriesModule,
   ],
-  controllers: [AppController, UserController],
   providers: [LocalStrategy, JwtStrategy, AppService],
 })
 export class AppModule {}

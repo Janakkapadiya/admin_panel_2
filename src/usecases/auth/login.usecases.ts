@@ -28,7 +28,7 @@ export class LoginUseCases {
   }
 
   async validateUserForLocalStragtegy(email: string, pass: string) {
-    const user = await this.userRepository.getByEmail(email);
+    const user = await this.userRepository.findByEmail(email);
     if (!user) {
       return null;
     }
@@ -41,7 +41,7 @@ export class LoginUseCases {
   }
 
   async validateUserForJWTStragtegy(email: string) {
-    const user = await this.userRepository.getByEmail(email);
+    const user = await this.userRepository.findByEmail(email);
     console.log(user);
     if (!user) {
       return null;

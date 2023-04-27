@@ -3,6 +3,7 @@ import { IsEnum, IsString } from 'class-validator';
 import { Role } from 'src/domain/enums/Roles.enum';
 
 export class CreateUserDto {
+  id: number;
   @ApiProperty()
   @IsString()
   email: string;
@@ -13,7 +14,7 @@ export class CreateUserDto {
   @IsString()
   password: string;
   @ApiProperty()
-  @IsEnum([Role.PowerUser, Role.User, Role.SupportDesk, Role.Admin])
+  @IsEnum([Role.PowerUser, Role.User, Role.SupportDesk])
   role: Role;
 }
 
