@@ -11,6 +11,7 @@ export class JwtTokenService implements IJwtService {
 
   async checkToken(token: string): Promise<any> {
     const decode = await this.jwtService.verifyAsync(token);
+    console.log(decode);
     return decode;
   }
 

@@ -13,13 +13,13 @@ export class DatabasePostRepository implements PostRepository {
   ) {}
 
   async createPost(data: PostM): Promise<PostM> {
-    const result = await this.todoEntityRepository.insert(data);
-    return this.toPosts(result.generatedMaps[0] as Posts);
+    const result = await this.todoEntityRepository.save(data);
+    return this.toPostsM(result);
   }
 
   async getAllPosts(): Promise<PostM[]> {
     const todoEntity = await this.todoEntityRepository.find();
-    return todoEntity.map((todoEntity) => this.toPosts(todoEntity));
+    return todoEntity.map((todoEntity) => this.toPostsM(todoEntity));
   }
 
   async getPost(userId: number): Promise<PostM> {
@@ -28,14 +28,14 @@ export class DatabasePostRepository implements PostRepository {
         id: userId,
       },
     });
-    return this.toPosts(todoEntity);
+    return this.toPostsM(todoEntity);
   }
 
   async deletePost(userId: number): Promise<void> {
     await this.todoEntityRepository.delete({ id: userId });
   }
 
-  private toPosts(todoEntity: Posts): PostM {
+  private toPostsM(todoEntity: Posts): PostM {
     const todo: PostM = new PostM();
 
     todo.id = todoEntity.id;

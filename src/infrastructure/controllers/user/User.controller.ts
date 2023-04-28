@@ -20,7 +20,7 @@ import { UserPresenter } from './user.presenter';
 import { ApiExtraModels, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateUserUseCase } from 'src/usecases/user/create.user.usecase';
 import { ApiResponseType } from 'src/infrastructure/common/swagger/res.decorator';
-import { AuthGuard } from '@nestjs/passport';
+import { UserM } from 'src/domain/model/UserM';
 
 @Controller('user')
 @ApiTags('user')
@@ -36,17 +36,14 @@ export class UserController {
     private readonly getUsersUseCaseProxy: UseCaseProxy<getUsersUseCases>,
   ) {}
 
-  @Post()
+  @Post('create')
   @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles(Role.Admin)
-  @ApiResponseType(UserPresenter, true)
   async createUser(@Body() userData: CreateUserDto) {
     const user = await this.createUserUsecaseProxy
       .getInstance()
       .execute(userData);
-
-    console.log(user);
-
+    console.log('the controller user -> ', user);
     return new UserPresenter(user);
   }
 

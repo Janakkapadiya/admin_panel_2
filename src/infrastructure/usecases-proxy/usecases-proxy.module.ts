@@ -17,16 +17,16 @@ import { EnvironmentConfigModule } from '../config/environment-config/environmen
 import { EnvironmentConfigService } from '../config/environment-config/environment-config.service';
 import { UseCaseProxy } from './usecases-proxy';
 import { DatabasePostRepository } from '../repositories/post.repository';
-import { getPostUseCase } from 'src/usecases/post/getPost.usecase';
-import { getAllPostUseCase } from 'src/usecases/post/getAllPost.usecase';
-import { createPostUseCase } from 'src/usecases/post/createPost.usecase';
-import { deletePostUseCase } from 'src/usecases/post/deletePost.usecase';
 import { getUsersUseCases } from 'src/usecases/user/all.user.usecase';
 import { getUserByIdUseCases } from 'src/usecases/user/getById.user.usecase';
 import { RegisterUseCases } from 'src/usecases/auth/register.user.usecase';
 import { CreateUserUseCase } from 'src/usecases/user/create.user.usecase';
 import { ExceptionsService } from '../exceptions/exceptions.service';
 import { DatabaseUserRepository } from '../repositories/user.repository';
+import { GetPostUseCase } from 'src/usecases/post/getPost.usecase';
+import { GetAllPostUseCase } from 'src/usecases/post/getAllPost.usecase';
+import { CreatePostUseCase } from 'src/usecases/post/createPost.usecase';
+import { DeletePostUseCase } from 'src/usecases/post/deletePost.usecase';
 
 @Module({
   imports: [
@@ -101,15 +101,13 @@ export class UsecasesProxyModule {
           inject: [DatabasePostRepository],
           provide: UsecasesProxyModule.GET_POST_USECASES_PROXY,
           useFactory: (postRepository: DatabasePostRepository) =>
-            new UseCaseProxy(new getPostUseCase(postRepository)),
+            new UseCaseProxy(new GetPostUseCase(postRepository)),
         },
         {
-          inject: [DatabasePostRepository, LoggerService],
+          inject: [DatabasePostRepository],
           provide: UsecasesProxyModule.GET_POSTS_USECASES_PROXY,
-          useFactory: (
-            logger: LoggerService,
-            postRepository: DatabasePostRepository,
-          ) => new UseCaseProxy(new getAllPostUseCase(logger, postRepository)),
+          useFactory: (postRepository: DatabasePostRepository) =>
+            new UseCaseProxy(new GetAllPostUseCase(postRepository)),
         },
         {
           inject: [LoggerService, DatabasePostRepository],
@@ -117,24 +115,25 @@ export class UsecasesProxyModule {
           useFactory: (
             logger: LoggerService,
             postRepository: DatabasePostRepository,
-          ) => new UseCaseProxy(new createPostUseCase(logger, postRepository)),
+          ) => new UseCaseProxy(new CreatePostUseCase(logger, postRepository)),
         },
         {
-          inject: [LoggerService, DatabasePostRepository],
+          inject: [DatabasePostRepository],
           provide: UsecasesProxyModule.DELETE_POST_USECASES_PROXY,
-          useFactory: (
-            logger: LoggerService,
-            postRepository: DatabasePostRepository,
-          ) => new UseCaseProxy(new deletePostUseCase(logger, postRepository)),
+          useFactory: (postRepository: DatabasePostRepository) =>
+            new UseCaseProxy(new DeletePostUseCase(postRepository)),
         },
         {
-          inject: [DatabaseUserRepository, ExceptionsService],
+          inject: [DatabaseUserRepository, ExceptionsService, BcryptService],
           provide: UsecasesProxyModule.REGISTER_USER_USECASES_PROXY,
           useFactory: (
             userRepository: DatabaseUserRepository,
             exception: ExceptionsService,
+            bycrypt: BcryptService,
           ) =>
-            new UseCaseProxy(new RegisterUseCases(userRepository, exception)),
+            new UseCaseProxy(
+              new RegisterUseCases(userRepository, exception, bycrypt),
+            ),
         },
         {
           inject: [DatabaseUserRepository, ExceptionsService],
@@ -154,10 +153,15 @@ export class UsecasesProxyModule {
             new UseCaseProxy(new getUsersUseCases(userRepository)),
         },
         {
-          inject: [LoggerService, DatabaseUserRepository],
+          inject: [DatabaseUserRepository, ExceptionsService],
           provide: UsecasesProxyModule.GET_USER_BY_ID_USECASES_PROXY,
-          useFactory: (userRepository: DatabaseUserRepository) =>
-            new UseCaseProxy(new getUserByIdUseCases(userRepository)),
+          useFactory: (
+            userRepository: DatabaseUserRepository,
+            exception: ExceptionsService,
+          ) =>
+            new UseCaseProxy(
+              new getUserByIdUseCases(userRepository, exception),
+            ),
         },
       ],
 

@@ -13,9 +13,8 @@ export class DatabaseUserRepository implements UserRepository {
   ) {}
 
   async register(user: UserM): Promise<UserM> {
-    const result = await this.userEntityRepository.insert(user);
-    console.log(result);
-    return this.toUser(result.generatedMaps[0] as User);
+    const result = await this.userEntityRepository.save(user);
+    return this.toUserM(result);
   }
 
   async findById(id: number): Promise<UserM> {
@@ -24,18 +23,18 @@ export class DatabaseUserRepository implements UserRepository {
         id,
       },
     });
-    return this.toUser(found);
+    return this.toUserM(found);
   }
 
   async createUser(user: UserM): Promise<UserM> {
-    const result = await this.userEntityRepository.insert(user);
-    console.log(result);
-    return this.toUser(result.generatedMaps[0] as User);
+    const result = await this.userEntityRepository.save(user);
+    console.log('the generated maps', result);
+    return this.toUserM(result);
   }
 
   async findAll(): Promise<UserM[]> {
     const users = await this.userEntityRepository.find();
-    return users.map((adminUserEntity) => this.toUser(adminUserEntity));
+    return users.map((adminUserEntity) => this.toUserM(adminUserEntity));
   }
 
   async findByEmail(email: string): Promise<UserM> {
@@ -50,7 +49,7 @@ export class DatabaseUserRepository implements UserRepository {
     return adminUserEntity;
   }
 
-  private toUser(adminUserEntity: User): UserM {
+  private toUserM(adminUserEntity: User): UserM {
     const adminUser: UserM = new UserM();
 
     adminUser.id = adminUserEntity.id;

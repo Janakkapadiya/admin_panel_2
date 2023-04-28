@@ -17,5 +17,3 @@ export class CreateUserDto {
   @IsEnum([Role.PowerUser, Role.User, Role.SupportDesk])
   role: Role;
 }
-
-export default CreateUserDto;

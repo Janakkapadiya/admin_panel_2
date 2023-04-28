@@ -1,5 +1,4 @@
 import { UserRepository } from 'src/domain/interface/UserRepository';
-import { ILogger } from 'src/domain/logger/Logger.interface';
 import { UserM } from 'src/domain/model/UserM';
 import { ExceptionsService } from 'src/infrastructure/exceptions/exceptions.service';
 

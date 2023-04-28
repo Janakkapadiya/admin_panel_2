@@ -16,6 +16,8 @@ export class CreateUserUseCase {
         code_error: 403,
       });
     }
-    return await this.userRepository.createUser(user);
+    const create = await this.userRepository.createUser(user);
+    console.log('createUser test case -> ', create);
+    return create;
   }
 }

@@ -24,7 +24,8 @@ export class LoginUseCases {
     const payload: IJwtServicePayload = { email: email };
     const secret = this.jwtConfig.getJwtSecret();
     const token = this.jwtTokenService.createToken(payload, secret);
-    return `Authentication=${token}; HttpOnly; Path=/}`;
+    const cookie = `Authentication=${token}; HttpOnly; Path=/ ; maxAge: 2 * 60 * 60 * 1000,`;
+    return cookie;
   }
 
   async validateUserForLocalStragtegy(email: string, pass: string) {

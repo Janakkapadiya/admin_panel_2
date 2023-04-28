@@ -17,25 +17,27 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     private readonly exceptionService: ExceptionsService,
   ) {
     super({
+      ignoreExpiration: false,
+      secretOrKey: process.env.JWT_SECRET,
       jwtFromRequest: ExtractJwt.fromExtractors([
         (request: Request) => {
           return request?.cookies?.Authentication;
         },
       ]),
-      secretOrKey: process.env.JWT_SECRET,
     });
   }
 
-  async validate(payload: any) {
+  async validate(payload: any, req: Request) {
     const user = this.loginUsecaseProxy
       .getInstance()
-      .validateUserForJWTStragtegy(payload.username);
+      .validateUserForJWTStragtegy(payload.email);
     if (!user) {
       this.logger.warn('JwtStrategy', `User not found`);
       this.exceptionService.UnauthorizedException({
         message: 'User not found',
       });
     }
-    return user;
+    req.user = user;
+    return req.user;
   }
 }

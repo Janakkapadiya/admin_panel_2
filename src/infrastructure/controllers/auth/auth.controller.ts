@@ -64,7 +64,6 @@ export class AuthController {
   }
 
   @Post('login')
-  @UseGuards(LoginGuard)
   @ApiBearerAuth()
   @ApiBody({ type: AuthLoginDto })
   @ApiOperation({ description: 'login' })
@@ -72,6 +71,7 @@ export class AuthController {
     const accessTokenCookie = await this.loginUsecaseProxy
       .getInstance()
       .getCookieWithJwtToken(auth.email);
+    console.log(accessTokenCookie);
     request.res.setHeader('Set-Cookie', [accessTokenCookie]);
     return 'Login successful';
   }

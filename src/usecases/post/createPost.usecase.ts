@@ -2,7 +2,7 @@ import { PostRepository } from 'src/domain/interface/PostRepository';
 import { ILogger } from 'src/domain/logger/Logger.interface';
 import { PostM } from 'src/domain/model/PostsM';
 
-export class createPostUseCase {
+export class CreatePostUseCase {
   constructor(
     private readonly logger: ILogger,
     private readonly postRepository: PostRepository,
