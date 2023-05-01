@@ -8,11 +8,8 @@ export class CreatePostUseCase {
     private readonly postRepository: PostRepository,
   ) {}
 
-  async execute(title: string, content: string): Promise<PostM> {
-    const post = new PostM();
-    post.title = title;
-    post.content = content;
-    const result = await this.postRepository.createPost(post);
+  async execute(userId: number, post: PostM): Promise<PostM> {
+    const result = await this.postRepository.createPost(userId, post);
     this.logger.log('addTodoUseCases execute', 'New todo have been inserted');
     return result;
   }

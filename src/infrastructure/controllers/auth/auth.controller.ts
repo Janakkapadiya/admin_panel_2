@@ -21,7 +21,6 @@ import { AuthLoginDto, RegisterDto } from './auth-dto.class';
 import { IsAuthPresenter } from './auth.presenter';
 
 import { JwtAuthGuard } from '../../common/guards/jwtAuth.guard';
-import { LoginGuard } from '../../common/guards/login.guard';
 
 import { UseCaseProxy } from '../../usecases-proxy/usecases-proxy';
 import { UsecasesProxyModule } from '../../usecases-proxy/usecases-proxy.module';
@@ -30,6 +29,8 @@ import { IsAuthenticatedUseCases } from '../../../usecases/auth/isAuthenticated.
 import { LogoutUseCases } from '../../../usecases/auth/logout.usecases';
 import { RegisterUseCases } from '../../../usecases/auth/register.user.usecase';
 import { ApiResponseType } from 'src/infrastructure/common/swagger/res.decorator';
+import { Roles } from 'src/infrastructure/common/decoretors/Roles.decoretor';
+import { Role } from 'src/domain/enums/Roles.enum';
 
 @Controller('auth')
 @ApiTags('auth')

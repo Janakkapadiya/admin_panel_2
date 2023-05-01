@@ -27,6 +27,10 @@ import { GetPostUseCase } from 'src/usecases/post/getPost.usecase';
 import { GetAllPostUseCase } from 'src/usecases/post/getAllPost.usecase';
 import { CreatePostUseCase } from 'src/usecases/post/createPost.usecase';
 import { DeletePostUseCase } from 'src/usecases/post/deletePost.usecase';
+import { MailerService } from '../services/mail/mailer.service';
+import { MailerModule } from '../services/mail/mail.module';
+import { UpdateUserPasswordUseCase } from 'src/usecases/user/update.password.usecase';
+import * as bcrypt from 'bcrypt';
 
 @Module({
   imports: [
@@ -36,6 +40,7 @@ import { DeletePostUseCase } from 'src/usecases/post/deletePost.usecase';
     EnvironmentConfigModule,
     RepositoriesModule,
     ExceptionsModule,
+    MailerModule,
   ],
 })
 export class UsecasesProxyModule {
@@ -56,6 +61,9 @@ export class UsecasesProxyModule {
 
   static REGISTER_USER_USECASES_PROXY = 'registerUserTestCasesProxy';
 
+  //update password
+  static UPDATE_USER_PASSWORD_USECASES_PROXY = 'updateUserPasswordProxy';
+
   static register(): DynamicModule {
     return {
       module: UsecasesProxyModule,
@@ -67,6 +75,7 @@ export class UsecasesProxyModule {
             EnvironmentConfigService,
             DatabaseUserRepository,
             BcryptService,
+            ExceptionsService,
           ],
           provide: UsecasesProxyModule.LOGIN_USECASES_PROXY,
           useFactory: (
@@ -75,6 +84,7 @@ export class UsecasesProxyModule {
             config: EnvironmentConfigService,
             userRepo: DatabaseUserRepository,
             bcryptService: BcryptService,
+            exception: ExceptionsService,
           ) =>
             new UseCaseProxy(
               new LoginUseCases(
@@ -83,14 +93,18 @@ export class UsecasesProxyModule {
                 config,
                 userRepo,
                 bcryptService,
+                exception,
               ),
             ),
         },
         {
-          inject: [DatabaseUserRepository],
+          inject: [DatabaseUserRepository, ExceptionsService],
           provide: UsecasesProxyModule.IS_AUTHENTICATED_USECASES_PROXY,
-          useFactory: (userRepo: DatabaseUserRepository) =>
-            new UseCaseProxy(new IsAuthenticatedUseCases(userRepo)),
+          useFactory: (
+            userRepo: DatabaseUserRepository,
+            exception: ExceptionsService,
+          ) =>
+            new UseCaseProxy(new IsAuthenticatedUseCases(userRepo, exception)),
         },
         {
           inject: [],
@@ -136,14 +150,19 @@ export class UsecasesProxyModule {
             ),
         },
         {
-          inject: [DatabaseUserRepository, ExceptionsService],
+          inject: [DatabaseUserRepository, ExceptionsService, MailerService],
           provide: UsecasesProxyModule.CREATE_USER_USECASES_PROXY,
           useFactory: (
             userRepository: DatabaseUserRepository,
             exceptionsService: ExceptionsService,
+            emailSendService: MailerService,
           ) =>
             new UseCaseProxy(
-              new CreateUserUseCase(userRepository, exceptionsService),
+              new CreateUserUseCase(
+                userRepository,
+                exceptionsService,
+                emailSendService,
+              ),
             ),
         },
         {
@@ -163,6 +182,20 @@ export class UsecasesProxyModule {
               new getUserByIdUseCases(userRepository, exception),
             ),
         },
+
+        // update password
+        {
+          inject: [DatabaseUserRepository, ExceptionsService, BcryptService],
+          provide: UsecasesProxyModule.UPDATE_USER_PASSWORD_USECASES_PROXY,
+          useFactory: (
+            userRepository: DatabaseUserRepository,
+            exception: ExceptionsService,
+            bcrypt: BcryptService,
+          ) =>
+            new UseCaseProxy(
+              new UpdateUserPasswordUseCase(userRepository, exception, bcrypt),
+            ),
+        },
       ],
 
       exports: [
@@ -179,6 +212,8 @@ export class UsecasesProxyModule {
         UsecasesProxyModule.GET_USERS_USECASES_PROXY,
         UsecasesProxyModule.GET_USER_BY_ID_USECASES_PROXY,
         UsecasesProxyModule.REGISTER_USER_USECASES_PROXY,
+        // ************
+        UsecasesProxyModule.UPDATE_USER_PASSWORD_USECASES_PROXY,
       ],
     };
   }

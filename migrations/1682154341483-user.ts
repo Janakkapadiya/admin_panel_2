@@ -29,10 +29,10 @@ export class create_user_and_posts_tables1612345678901
         \`id\` bigint NOT NULL AUTO_INCREMENT,
         \`title\` varchar(255) NOT NULL,
         \`content\` varchar(255) NULL,
-        \`user_id\` bigint NOT NULL,
+        \`userId\` bigint NOT NULL,
         PRIMARY KEY (\`id\`),
         CONSTRAINT \`FK_7ef1260a42c6fe8f6e1b7e3b6c2\`
-          FOREIGN KEY (\`user_id\`)
+          FOREIGN KEY (\`userId\`)
           REFERENCES \`user\` (\`user_id\`)
           ON DELETE CASCADE
           ON UPDATE CASCADE

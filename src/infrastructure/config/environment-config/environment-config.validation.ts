@@ -18,21 +18,23 @@ class EnvironmentVariables {
   @IsEnum(Environment)
   NODE_ENV: Environment;
 
+  //jwt
   @IsString()
   JWT_SECRET: string;
 
+  // email
+  @IsString()
+  EMAIL_USER: string;
   @IsString()
   EMAIL_SENDER: string;
-
   @IsString()
   EMAIL_HOST: string;
-
   @IsNumber()
   EMAIL_PORT: number;
-
   @IsString()
   EMAIL_SECRET: string;
 
+  // db
   @IsString()
   DATABASE_HOST: string;
   @IsNumber()

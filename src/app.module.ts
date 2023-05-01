@@ -10,6 +10,7 @@ import { BcryptModule } from './infrastructure/services/bcrypt/bcrypt.module';
 import { EnvironmentConfigModule } from './infrastructure/config/environment-config/environment-config.module';
 import { ControllersModule } from './infrastructure/controllers/controllers.module';
 import { AppService } from './app.service';
+import { MailerModule } from './infrastructure/services/mail/mail.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { AppService } from './app.service';
     BcryptModule,
     JwtServiceModule,
     EnvironmentConfigModule,
+    MailerModule,
   ],
   providers: [LocalStrategy, JwtStrategy, AppService],
 })

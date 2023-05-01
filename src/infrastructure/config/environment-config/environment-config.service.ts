@@ -9,6 +9,9 @@ export class EnvironmentConfigService
   implements DatabaseConfig, JWTConfig, EmailConfig
 {
   constructor(private configService: ConfigService) {}
+  getEmailUser(): string {
+    return this.configService.get<string>('EMAIL_USER');
+  }
   getEmailHost(): string {
     return this.configService.get<string>('EMAIL_HOST');
   }

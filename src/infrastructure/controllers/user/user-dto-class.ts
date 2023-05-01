@@ -17,3 +17,12 @@ export class CreateUserDto {
   @IsEnum([Role.PowerUser, Role.User, Role.SupportDesk])
   role: Role;
 }
+
+export class UpdatePasswordDto {
+  @ApiProperty()
+  @IsString()
+  email: string;
+  @ApiProperty()
+  @IsString()
+  password: string;
+}

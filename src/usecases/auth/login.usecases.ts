@@ -4,6 +4,7 @@ import {
   IJwtServicePayload,
 } from 'src/domain/adepters/jwt.interface';
 import { JWTConfig } from 'src/domain/config/jwt.interface';
+import { IException } from 'src/domain/exceptions/exceptions.interface';
 import { UserRepository } from 'src/domain/interface/UserRepository';
 import { ILogger } from 'src/domain/logger/Logger.interface';
 
@@ -14,6 +15,7 @@ export class LoginUseCases {
     private readonly jwtConfig: JWTConfig,
     private readonly userRepository: UserRepository,
     private readonly bcryptService: IBcryptService,
+    private readonly exception: IException,
   ) {}
 
   async getCookieWithJwtToken(email: string) {
@@ -31,21 +33,30 @@ export class LoginUseCases {
   async validateUserForLocalStragtegy(email: string, pass: string) {
     const user = await this.userRepository.findByEmail(email);
     if (!user) {
-      return null;
+      this.exception.UnauthorizedException({
+        message: 'user could not found so can not validate user',
+        code_error: 401,
+      });
     }
     const match = await this.bcryptService.compare(pass, user.password);
     if (user && match) {
       const { password, ...result } = user;
       return result;
     }
-    return null;
+    this.exception.forbiddenException({
+      message: "password doesn't match",
+      code_error: 403,
+    });
   }
 
   async validateUserForJWTStragtegy(email: string) {
     const user = await this.userRepository.findByEmail(email);
     console.log(user);
     if (!user) {
-      return null;
+      this.exception.UnauthorizedException({
+        message: 'user could not found so can not validate user',
+        code_error: 401,
+      });
     }
     return user;
   }

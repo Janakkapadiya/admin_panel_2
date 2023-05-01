@@ -22,10 +22,12 @@
     "typeorm": "NODE_ENV=local npm run build && npx typeorm -d dist/src/infrastructure/config/typeorm/typeorm.config.js",
     "migration:generate": "npm run typeorm -- migration:generate",
     "migration:run": "npm run typeorm -- migration:run",
+    "migration:create": "npm run typeorm -- migration:create",
     "migration:revert": "npm run typeorm -- migration:revert"
   },
   "dependencies": {
     "@hapi/joi": "^17.1.1",
+    "@nestjs-modules/mailer": "^1.8.1",
     "@nestjs/common": "^9.0.0",
     "@nestjs/config": "^2.3.1",
     "@nestjs/core": "^9.0.0",
@@ -64,6 +66,7 @@
     "@types/jest": "28.1.8",
     "@types/morgan": "^1.9.4",
     "@types/node": "^16.0.0",
+    "@types/nodemailer": "^6.4.7",
     "@types/passport-jwt": "^3.0.8",
     "@types/passport-local": "^1.0.35",
     "@types/supertest": "^2.0.11",

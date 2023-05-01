@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Inject, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Inject,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiTags, ApiResponse, ApiExtraModels } from '@nestjs/swagger';
 import { UseCaseProxy } from 'src/infrastructure/usecases-proxy/usecases-proxy';
 import { UsecasesProxyModule } from 'src/infrastructure/usecases-proxy/usecases-proxy.module';
@@ -10,12 +18,13 @@ import { JwtAuthGuard } from 'src/infrastructure/common/guards/jwtAuth.guard';
 import { RoleGuard } from 'src/infrastructure/common/guards/roles.guard';
 import { Roles } from 'src/infrastructure/common/decoretors/Roles.decoretor';
 import { Role } from 'src/domain/enums/Roles.enum';
+import { User } from 'src/infrastructure/entities/user.entity';
 
 @Controller('post')
 @ApiTags('post')
 @ApiResponse({ status: 500, description: 'Internal error' })
 @ApiExtraModels()
-export class UserController {
+export class PostController {
   constructor(
     @Inject(UsecasesProxyModule.CREATE_POST_USECASES_PROXY)
     private readonly createUserPost: UseCaseProxy<CreatePostUseCase>,
@@ -28,9 +37,11 @@ export class UserController {
   @Post('create')
   @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles(Role.User)
-  async createPost(@Body() createPostDto: CreatePostDto) {
-    const { title, content } = createPostDto;
-    const post = this.createUserPost.getInstance().execute(title, content);
+  async createPost(@Body() createPostDto: CreatePostDto, @Req() request: any) {
+    const post = await this.createUserPost
+      .getInstance()
+      .execute(request.user.id, createPostDto);
+    console.log('post entity user relation ->', post);
     return post;
   }
 

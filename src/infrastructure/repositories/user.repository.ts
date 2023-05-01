@@ -49,6 +49,17 @@ export class DatabaseUserRepository implements UserRepository {
     return adminUserEntity;
   }
 
+  async resetPassword(email: string, password: string): Promise<void> {
+    await this.userEntityRepository.update(
+      {
+        email: email,
+      },
+      {
+        password: password,
+      },
+    );
+  }
+
   private toUserM(adminUserEntity: User): UserM {
     const adminUser: UserM = new UserM();
 
