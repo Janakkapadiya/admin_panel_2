@@ -30,7 +30,6 @@ import { DeletePostUseCase } from 'src/usecases/post/deletePost.usecase';
 import { MailerService } from '../services/mail/mailer.service';
 import { MailerModule } from '../services/mail/mail.module';
 import { UpdateUserPasswordUseCase } from 'src/usecases/user/update.password.usecase';
-import * as bcrypt from 'bcrypt';
 
 @Module({
   imports: [
