@@ -25,7 +25,10 @@ export class DatabasePostRepository implements PostRepository {
 
   async getAllPosts(): Promise<PostM[]> {
     const todoEntity = await this.todoEntityRepository.find();
-    return todoEntity.map((todoEntity) => this.toPostsM(todoEntity));
+    console.log(todoEntity);
+    const repl = todoEntity.map((todoEntity) => this.toPostsM(todoEntity));
+    console.log('getAllPosts repl -> ', repl);
+    return repl;
   }
 
   async getPost(userId: number): Promise<PostM> {
@@ -47,6 +50,7 @@ export class DatabasePostRepository implements PostRepository {
     todo.id = todoEntity.id;
     todo.title = todoEntity.title;
     todo.content = todoEntity.content;
+
     return todo;
   }
 }

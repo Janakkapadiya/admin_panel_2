@@ -51,7 +51,6 @@ export class LoginUseCases {
 
   async validateUserForJWTStragtegy(email: string) {
     const user = await this.userRepository.findByEmail(email);
-    console.log(user);
     if (!user) {
       this.exception.UnauthorizedException({
         message: 'user could not found so can not validate user',

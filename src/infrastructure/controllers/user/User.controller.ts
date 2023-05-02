@@ -45,16 +45,15 @@ export class UserController {
     const user = await this.createUserUsecaseProxy
       .getInstance()
       .execute(userData);
-    console.log('the controller user -> ', user);
     return new UserPresenter(user);
   }
 
-  @Roles(Role.User)
+  @Roles(Role.Admin)
   @UseGuards(JwtAuthGuard, RoleGuard)
-  @Get('all')
+  @Get()
   @ApiResponseType(UserPresenter, true)
   async getAllUser() {
-    return this.getUsersUseCaseProxy.getInstance().execute();
+    return await this.getUsersUseCaseProxy.getInstance().execute();
   }
 
   @Roles(Role.User)
@@ -62,7 +61,7 @@ export class UserController {
   @Get(':id')
   @ApiResponseType(UserPresenter, true)
   async getUser(@Param('id') id: number) {
-    return this.getUserByIdUseCaseProxy.getInstance().execute(id);
+    return await this.getUserByIdUseCaseProxy.getInstance().execute(id);
   }
 
   @Post('updatePassword')
@@ -71,6 +70,8 @@ export class UserController {
   @ApiResponseType(UserPresenter, true)
   async updatePassword(@Body() updatePasswordDto: UpdatePasswordDto) {
     const { email, password } = updatePasswordDto;
-    this.updateUsersPasswordCaseProxy.getInstance().execute(email, password);
+    await this.updateUsersPasswordCaseProxy
+      .getInstance()
+      .execute(email, password);
   }
 }

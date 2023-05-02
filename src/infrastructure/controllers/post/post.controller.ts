@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Inject,
+  Param,
   Post,
   Req,
   UseGuards,
@@ -19,11 +20,12 @@ import { RoleGuard } from 'src/infrastructure/common/guards/roles.guard';
 import { Roles } from 'src/infrastructure/common/decoretors/Roles.decoretor';
 import { Role } from 'src/domain/enums/Roles.enum';
 import { User } from 'src/infrastructure/entities/user.entity';
+import { PostsPresenter } from './post.presenter';
 
 @Controller('post')
 @ApiTags('post')
 @ApiResponse({ status: 500, description: 'Internal error' })
-@ApiExtraModels()
+@ApiExtraModels(PostsPresenter)
 export class PostController {
   constructor(
     @Inject(UsecasesProxyModule.CREATE_POST_USECASES_PROXY)
@@ -48,16 +50,16 @@ export class PostController {
   @Get(':id')
   @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles(Role.User)
-  async getPost(id: number) {
-    const post = this.getUserPost.getInstance().execute(id);
+  async getPost(@Param('id') id: number) {
+    const post = await this.getUserPost.getInstance().execute(id);
     return post;
   }
 
-  @Get('getAll')
+  @Get()
   @UseGuards(JwtAuthGuard, RoleGuard)
-  @Roles(Role.SupportDesk)
+  @Roles(Role.User)
   async getAllPost() {
-    const post = this.getAllPosts.getInstance().execute();
+    const post = await this.getAllPosts.getInstance().execute();
     return post;
   }
 }

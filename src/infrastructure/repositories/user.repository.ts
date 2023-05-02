@@ -28,7 +28,6 @@ export class DatabaseUserRepository implements UserRepository {
 
   async createUser(user: UserM): Promise<UserM> {
     const result = await this.userEntityRepository.save(user);
-    console.log('the generated maps', result);
     return this.toUserM(result);
   }
 
@@ -70,17 +69,5 @@ export class DatabaseUserRepository implements UserRepository {
     adminUser.role = adminUserEntity.role;
 
     return adminUser;
-  }
-
-  private toUserEntity(adminUser: UserM): User {
-    const adminUserEntity: User = new User();
-
-    adminUserEntity.id = adminUser.id;
-    adminUserEntity.email = adminUser.email;
-    adminUserEntity.name = adminUser.name;
-    adminUserEntity.password = adminUser.password;
-    adminUserEntity.role = adminUser.role;
-
-    return adminUserEntity;
   }
 }

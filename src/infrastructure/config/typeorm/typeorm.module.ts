@@ -3,7 +3,6 @@ import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { EnvironmentConfigModule } from '../environment-config/environment-config.module';
 import { EnvironmentConfigService } from '../environment-config/environment-config.service';
 import { join } from 'path';
-import { DatabaseUserRepository } from 'src/infrastructure/repositories/user.repository';
 
 export const getTypeOrmModuleOptions = (
   config: EnvironmentConfigService,

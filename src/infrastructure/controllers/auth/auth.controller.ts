@@ -58,9 +58,6 @@ export class AuthController {
     const user = await this.registerUserTestCasesProxy
       .getInstance()
       .execute(registerData);
-
-    console.log(user);
-
     return user;
   }
 
